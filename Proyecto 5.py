@@ -149,3 +149,22 @@ df_internet['user_id'] = df_internet['user_id'].astype(int)
 
 # 4. Revisar valores faltantes
 print(df_internet.isna().sum())
+
+# -------------- 1.11 Estudiar las condiciones de Tarifa
+
+print("Información general de las tarifas:\n")
+print(df_plans)
+
+# -------------- Calcula el número de llamadas hechas por cada usuario al mes.
+
+# Crear una columna con el mes
+df_calls['month'] = df_calls['call_date'].dt.month
+
+# Agrupar por usuario y mes, contar llamadas
+calls_per_user_month = df_calls.groupby(['user_id', 'month']).agg(
+    calls_count=('id', 'count')
+).reset_index()
+
+# Guardar el resultado en un nuevo DataFrame
+print(calls_per_user_month.head())
+
