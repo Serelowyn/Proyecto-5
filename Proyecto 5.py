@@ -62,8 +62,8 @@ print(df_users.head())
 # -------------- 1.7.1 Correccion de datos (users)
 
 # 1. Convertir fechas a tipo datetime
-df_users['reg_date'] = pd.to_datetime(df_users['reg_date'], errors='coerce')
-df_users['churn_date'] = pd.to_datetime(df_users['churn_date'], errors='coerce')
+df_users['reg_date'] = pandas.to_datetime(df_users['reg_date'], errors='coerce')
+df_users['churn_date'] = pandas.to_datetime(df_users['churn_date'], errors='coerce')
 
 # 2. Minusculas nombres de planes
 df_users['plan'] = df_users['plan'].str.lower()
@@ -75,6 +75,9 @@ df_users['age'] = df_users['age'].astype(int)
 # 4. Opcional: limpiar nombres de ciudades (ejemplo: quitar "MSA")
 df_users['city'] = df_users['city'].str.replace(' MSA', '', regex=False)
 
-# 5. Revisar valores faltantes
+# 5. Revisar valores faltantes y rellenar
+df_users["churn_date"] = df_users["churn_date"].fillna("01-01-2018")
+df_users['churn_date'] = pandas.to_datetime(df_users['churn_date'], errors='coerce')
 print(df_users.isna().sum())
+print(df_users)
 
