@@ -369,3 +369,31 @@ pyplot.title("Mensajes promedio enviados por mes según el plan")
 pyplot.legend()
 pyplot.xticks(range(1,13))
 pyplot.show()
+
+# -------------- Compara la cantidad de tráfico de Internet consumido por usuarios por plan
+
+# Convertir MB a GB para facilitar la interpretación
+user_month_data['gb_used'] = user_month_data['mb_used'] / 1024
+
+# Calcular promedio de GB usados por plan y mes
+avg_internet = user_month_data.groupby(['plan', 'month']).agg(
+    avg_gb=('gb_used', 'mean')
+).reset_index()
+
+print(avg_internet.head())
+
+# Graficar comparación por plan
+pyplot.figure(figsize=(10,6))
+for plan in avg_internet['plan'].unique():
+    subset = avg_internet[avg_internet['plan'] == plan]
+    pyplot.bar(subset['month'] + (0.2 if plan == 'ultimate' else -0.2),
+            subset['avg_gb'],
+            width=0.4,
+            label=plan.capitalize())
+
+pyplot.xlabel("Mes")
+pyplot.ylabel("Promedio de GB usados")
+pyplot.title("Consumo promedio de Internet por plan y mes")
+pyplot.legend()
+pyplot.xticks(range(1,13))
+pyplot.show()
