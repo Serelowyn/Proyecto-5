@@ -47,3 +47,14 @@ df_plans['usd_per_message'] = df_plans['usd_per_message'].astype(float)
 df_plans['usd_per_gb'] = df_plans['usd_per_gb'].astype(float)
 
 print(df_plans.head())
+
+# -------------- 1.7 Usuarios (users)
+
+# Imprime la información general/resumida sobre el DataFrame de usuarios
+df_users.describe()
+df_users.dtypes
+df_users.info()
+df_users.isna()
+
+# Imprime una muestra de datos para usuarios
+print(df_users.head())
