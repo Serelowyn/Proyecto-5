@@ -104,3 +104,24 @@ df_calls['user_id'] = df_calls['user_id'].astype(int)
 
 # 4. Revisar valores faltantes
 print(df_calls.isna().sum())
+
+# -------------- 1.9 Mensajes (mensajes)
+
+# Imprime la información general/resumida sobre el DataFrame de usuarios
+df_mensajes.describe()
+df_mensajes.dtypes
+df_mensajes.info()
+df_mensajes.isna()
+
+# Imprime una muestra de datos para usuarios
+print(df_mensajes.head())
+
+# 1. Convertir la fecha al formato correcto
+df_mensajes['message_date'] = pandas.to_datetime(df_mensajes['message_date'], errors='coerce')
+
+# 2. Convertir id y user_id a enteros
+df_mensajes['id'] = df_mensajes['id'].astype(int)
+df_mensajes['user_id'] = df_mensajes['user_id'].astype(int)
+
+# 3. Revisar valores faltantes
+print(df_mensajes.isna().sum())
