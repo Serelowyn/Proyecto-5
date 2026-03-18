@@ -58,3 +58,23 @@ df_users.isna()
 
 # Imprime una muestra de datos para usuarios
 print(df_users.head())
+
+# -------------- 1.7.1 Correccion de datos (users)
+
+# 1. Convertir fechas a tipo datetime
+df_users['reg_date'] = pd.to_datetime(df_users['reg_date'], errors='coerce')
+df_users['churn_date'] = pd.to_datetime(df_users['churn_date'], errors='coerce')
+
+# 2. Minusculas nombres de planes
+df_users['plan'] = df_users['plan'].str.lower()
+
+# 3. Asegurar tipos de datos correctos
+df_users['user_id'] = df_users['user_id'].astype(int)
+df_users['age'] = df_users['age'].astype(int)
+
+# 4. Opcional: limpiar nombres de ciudades (ejemplo: quitar "MSA")
+df_users['city'] = df_users['city'].str.replace(' MSA', '', regex=False)
+
+# 5. Revisar valores faltantes
+print(df_users.isna().sum())
+
