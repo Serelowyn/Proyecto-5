@@ -339,3 +339,33 @@ pyplot.suptitle("")  # Elimina el título automático de pandas
 pyplot.xlabel("Plan")
 pyplot.ylabel("Minutos mensuales usados")
 pyplot.show()
+
+# -------------- 1.13.2 Mensajes
+
+# -------------- Comprara el número de mensajes que tienden a enviar cada mes los usuarios de cada plan
+
+# Seleccionar columnas relevantes
+messages_by_plan = user_month_data[['plan', 'month', 'sms_count']]
+
+# Calcular promedio de mensajes por plan y mes
+avg_messages = messages_by_plan.groupby(['plan', 'month']).agg(
+    avg_sms=('sms_count', 'mean')
+).reset_index()
+
+print(avg_messages.head())
+
+# Graficar
+pyplot.figure(figsize=(10,6))
+for plan in avg_messages['plan'].unique():
+    subset = avg_messages[avg_messages['plan'] == plan]
+    pyplot.bar(subset['month'] + (0.2 if plan == 'ultimate' else -0.2),
+            subset['avg_sms'],
+            width=0.4,
+            label=plan.capitalize())
+
+pyplot.xlabel("Mes")
+pyplot.ylabel("Número promedio de mensajes")
+pyplot.title("Mensajes promedio enviados por mes según el plan")
+pyplot.legend()
+pyplot.xticks(range(1,13))
+pyplot.show()
