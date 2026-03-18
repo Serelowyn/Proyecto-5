@@ -178,4 +178,5 @@ minutes_per_user_month = df_calls.groupby(['user_id', 'month']).agg(
 # Guardar el resultado en un nuevo DataFrame
 print(minutes_per_user_month.head())
 
+# -------------- Calcula el número de mensajes enviados por cada usuario al mes
 
