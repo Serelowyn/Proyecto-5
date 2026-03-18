@@ -295,3 +295,24 @@ pyplot.legend()
 pyplot.xticks(range(1,13))
 pyplot.show()
 
+
+# -------------- Compara el número de minutos mensuales que necesitan los usuarios de cada plan. Traza un histograma.
+
+# Seleccionar columnas relevantes
+minutes_by_plan = user_month_data[['plan', 'total_minutes']]
+
+# Crear el histograma
+pyplot.figure(figsize=(10,6))
+
+for plan in minutes_by_plan['plan'].unique():
+    subset = minutes_by_plan[minutes_by_plan['plan'] == plan]
+    pyplot.hist(subset['total_minutes'], 
+             bins=30, 
+             alpha=0.6, 
+             label=plan.capitalize())
+
+pyplot.xlabel("Minutos mensuales usados")
+pyplot.ylabel("Número de usuarios")
+pyplot.title("Distribución de minutos mensuales por plan")
+pyplot.legend()
+pyplot.show()
