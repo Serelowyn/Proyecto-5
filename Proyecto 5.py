@@ -316,3 +316,6 @@ pyplot.ylabel("Número de usuarios")
 pyplot.title("Distribución de minutos mensuales por plan")
 pyplot.legend()
 pyplot.show()
+
+# -------------- # Calcula la media y la varianza de la duración mensual de llamadas.
+
