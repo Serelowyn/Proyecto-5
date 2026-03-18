@@ -125,3 +125,27 @@ df_mensajes['user_id'] = df_mensajes['user_id'].astype(int)
 
 # 3. Revisar valores faltantes
 print(df_mensajes.isna().sum())
+
+# -------------- 1.10 Internet (internet)
+
+# Imprime la información general/resumida sobre el DataFrame de usuarios
+df_internet.describe()
+df_internet.dtypes
+df_internet.info()
+df_internet.isna()
+
+# Imprime una muestra de datos para usuarios
+print(df_internet.head())
+
+# 1. Convertir la fecha al formato correcto
+df_internet['session_date'] = pandas.to_datetime(df_internet['session_date'], errors='coerce')
+
+# 2. Asegurar que la duración sea numérica (float)
+df_internet['mb_used'] = df_internet['mb_used'].astype(float)
+
+# 3. Convertir id y user_id a enteros
+df_internet['id'] = df_internet['id'].astype(int)
+df_internet['user_id'] = df_internet['user_id'].astype(int)
+
+# 4. Revisar valores faltantes
+print(df_internet.isna().sum())
