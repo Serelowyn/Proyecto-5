@@ -180,3 +180,17 @@ print(minutes_per_user_month.head())
 
 # -------------- Calcula el número de mensajes enviados por cada usuario al mes
 
+df_mensajes['month'] = df_mensajes['message_date'].dt.month
+
+# Agrupar por usuario y mes, contar mensajes
+messages_per_user_month = df_mensajes.groupby(['user_id', 'month']).agg(
+    sms_count=('id', 'count')
+).reset_index()
+
+# Guardar el resultado en un nuevo DataFrame
+print(messages_per_user_month.head())
+
+# --------------Calcula el volumen del tráfico de Internet usado por cada usuario al mes
+
+
+ 
