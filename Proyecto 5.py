@@ -5,6 +5,7 @@ import numpy
 import math
 from math import factorial
 from scipy import stats
+from matplotlib import pyplot
 
 # ----------------- Fin de las importaciones
 
@@ -267,3 +268,30 @@ user_month_data['monthly_revenue'] = (
 
 # Mostrar una muestra del resultado
 print(user_month_data[['user_id', 'month', 'plan', 'monthly_revenue']].head())
+
+# -------------- 1.13.1 Llamadas
+
+# -------------- Compara la duración promedio de llamadas por cada plan y por cada mes. Traza un gráfico de barras para visualizarla.
+
+avg_minutes = user_month_data.groupby(['plan', 'month']).agg(
+    avg_call_duration=('total_minutes', 'mean')
+).reset_index()
+
+print(avg_minutes.head())
+
+# Gráfico de barras
+pyplot.figure(figsize=(10,6))
+for plan in avg_minutes['plan'].unique():
+    subset = avg_minutes[avg_minutes['plan'] == plan]
+    pyplot.bar(subset['month'] + (0.2 if plan == 'ultimate' else -0.2), 
+            subset['avg_call_duration'], 
+            width=0.4, 
+            label=plan.capitalize())
+
+pyplot.xlabel("Mes")
+pyplot.ylabel("Duración promedio de llamadas (minutos)")
+pyplot.title("Duración promedio de llamadas por plan y mes")
+pyplot.legend()
+pyplot.xticks(range(1,13))
+pyplot.show()
+
