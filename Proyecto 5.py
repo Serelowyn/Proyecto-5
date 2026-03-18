@@ -152,7 +152,6 @@ print(df_internet.isna().sum())
 
 # -------------- 1.11 Estudiar las condiciones de Tarifa
 
-print("Información general de las tarifas:\n")
 print(df_plans)
 
 # -------------- Calcula el número de llamadas hechas por cada usuario al mes.
@@ -219,3 +218,52 @@ user_month_data = user_month_data.fillna(0)
 
 # Mostrar una muestra del resultado
 print(user_month_data.head())
+
+# Añade la información de la tarifa
+
+
+user_month_data = user_month_data.merge(
+    df_users[['user_id', 'plan', 'city']], 
+    on='user_id', 
+    how='left'
+)
+
+# 2. Unir con la tabla de planes para obtener condiciones de cada tarifa
+user_month_data = user_month_data.merge(
+    df_plans, 
+    left_on='plan', 
+    right_on='plan_name', 
+    how='left'
+)
+
+# 3. Mostrar una muestra del resultado
+print(user_month_data.head())
+
+
+# -------------- Calcula el ingreso mensual para cada usuario
+
+# Convertir MB a GB para comparar con el límite del plan
+user_month_data['gb_used'] = user_month_data['mb_used'] / 1024
+
+# Calcular excedentes de minutos, SMS y GB
+user_month_data['extra_minutes'] = numpy.maximum(user_month_data['total_minutes'] - user_month_data['minutes_included'], 0)
+
+user_month_data['extra_sms'] = numpy.maximum(user_month_data['sms_count'] - user_month_data['messages_included'], 0)
+
+user_month_data['extra_gb'] = numpy.maximum(user_month_data['gb_used'] - (user_month_data['mb_per_month_included'] / 1024), 0)
+
+# Calcular costo de excedentes
+user_month_data['cost_minutes'] = user_month_data['extra_minutes'] * user_month_data['usd_per_minute']
+user_month_data['cost_sms'] = user_month_data['extra_sms'] * user_month_data['usd_per_message']
+user_month_data['cost_gb'] = user_month_data['extra_gb'] * user_month_data['usd_per_gb']
+
+# Calcular ingreso mensual total por usuario
+user_month_data['monthly_revenue'] = (
+    user_month_data['usd_monthly_pay'] +
+    user_month_data['cost_minutes'] +
+    user_month_data['cost_sms'] +
+    user_month_data['cost_gb']
+)
+
+# Mostrar una muestra del resultado
+print(user_month_data[['user_id', 'month', 'plan', 'monthly_revenue']].head())
