@@ -81,3 +81,26 @@ df_users['churn_date'] = pandas.to_datetime(df_users['churn_date'], errors='coer
 print(df_users.isna().sum())
 print(df_users)
 
+# -------------- 1.8 Llamadas (calls)
+
+# Imprime la información general/resumida sobre el DataFrame de usuarios
+df_calls.describe()
+df_calls.dtypes
+df_calls.info()
+df_calls.isna()
+
+# Imprime una muestra de datos para usuarios
+print(df_calls.head())
+
+# 1. Convertir la fecha al formato correcto
+df_calls['call_date'] = pandas.to_datetime(df_calls['call_date'], errors='coerce')
+
+# 2. Asegurar que la duración sea numérica (float)
+df_calls['duration'] = df_calls['duration'].astype(float)
+
+# 3. Convertir id y user_id a enteros
+df_calls['id'] = df_calls['id'].astype(int)
+df_calls['user_id'] = df_calls['user_id'].astype(int)
+
+# 4. Revisar valores faltantes
+print(df_calls.isna().sum())
