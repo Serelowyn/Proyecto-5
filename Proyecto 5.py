@@ -317,5 +317,25 @@ pyplot.title("Distribución de minutos mensuales por plan")
 pyplot.legend()
 pyplot.show()
 
-# -------------- # Calcula la media y la varianza de la duración mensual de llamadas.
+# -------------- Calcula la media y la varianza de la duración mensual de llamadas.
 
+# Calcular la media de minutos mensuales
+mean_minutes = user_month_data['total_minutes'].mean()
+
+# Calcular la varianza de minutos mensuales
+var_minutes = user_month_data['total_minutes'].var()
+
+print(f"Media de minutos mensuales: {mean_minutes:.2f}")
+print(f"Varianza de minutos mensuales: {var_minutes:.2f}")
+
+# -------------- Traza un diagrama de caja para visualizar la distribución de la duración mensual de llamadas
+
+# Crear el diagrama de caja
+pyplot.figure(figsize=(8,6))
+user_month_data.boxplot(column='total_minutes', by='plan')
+
+pyplot.title("Distribución de la duración mensual de llamadas por plan")
+pyplot.suptitle("")  # Elimina el título automático de pandas
+pyplot.xlabel("Plan")
+pyplot.ylabel("Minutos mensuales usados")
+pyplot.show()
