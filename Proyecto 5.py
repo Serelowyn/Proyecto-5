@@ -168,3 +168,14 @@ calls_per_user_month = df_calls.groupby(['user_id', 'month']).agg(
 # Guardar el resultado en un nuevo DataFrame
 print(calls_per_user_month.head())
 
+# -------------- Calcula la cantidad de minutos usados por cada usuario al mes
+
+# Agrupar por usuario y mes, sumar minutos
+minutes_per_user_month = df_calls.groupby(['user_id', 'month']).agg(
+    total_minutes=('duration', 'sum')
+).reset_index()
+
+# Guardar el resultado en un nuevo DataFrame
+print(minutes_per_user_month.head())
+
+
