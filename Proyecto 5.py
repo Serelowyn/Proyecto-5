@@ -17,3 +17,16 @@ df_plans = pandas.read_csv(r"C:\\Users\\sasor\\Desktop\\Tripleten\\Sprint 5\\meg
 df_users = pandas.read_csv(r"C:\\Users\\sasor\\Desktop\\Tripleten\\Sprint 5\\megaline_users.csv")
 
 # ----------------------------
+
+# 1.4 TARIFAS (plans)
+
+# Imprime la información general/resumida sobre el DataFrame de las tarifas
+
+df_plans.describe()
+df_plans.dtypes
+df_plans.info()
+df_plans.isna()
+
+# Imprime una muestra de los datos para las tarifas
+
+print(df_plans.head())
