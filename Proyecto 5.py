@@ -190,7 +190,32 @@ messages_per_user_month = df_mensajes.groupby(['user_id', 'month']).agg(
 # Guardar el resultado en un nuevo DataFrame
 print(messages_per_user_month.head())
 
-# --------------Calcula el volumen del tráfico de Internet usado por cada usuario al mes
+# -------------- Calcula el volumen del tráfico de Internet usado por cada usuario al mes
 
+# Crear columna con el mes
+df_internet['month'] = df_internet['session_date'].dt.month
 
- 
+# Agrupar por usuario y mes, sumar MB usados
+internet_per_user_month = df_internet.groupby(['user_id', 'month']).agg(
+    mb_used=('mb_used', 'sum')
+).reset_index()
+
+# Guardar el resultado en un nuevo DataFrame
+print(internet_per_user_month.head())
+
+# -------------- Fusionar datoss
+
+# Fusionar llamadas y minutos
+calls_data = calls_per_user_month.merge(minutes_per_user_month, on=['user_id', 'month'], how='outer')
+
+# Agregar mensajes
+calls_messages_data = calls_data.merge(messages_per_user_month, on=['user_id', 'month'], how='outer')
+
+# Agregar internet
+user_month_data = calls_messages_data.merge(internet_per_user_month, on=['user_id', 'month'], how='outer')
+
+# Rellenar valores faltantes con 0 (usuarios que no hicieron llamadas, SMS o internet ese mes)
+user_month_data = user_month_data.fillna(0)
+
+# Mostrar una muestra del resultado
+print(user_month_data.head())
