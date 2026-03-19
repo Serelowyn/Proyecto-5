@@ -432,3 +432,56 @@ pyplot.ylabel("Densidad")
 pyplot.title("Distribución de consumo de Internet por plan (KDE)")
 pyplot.legend()
 pyplot.show()
+
+# -------------- 1.14 Ingreso
+
+# Paso 1: Estadísticas descriptivas de ingresos por plan
+income_stats = user_month_data.groupby('plan')['monthly_revenue'].agg(
+    mean='mean',
+    median='median',
+    var='var',
+    std='std',
+    min='min',
+    max='max'
+).reset_index()
+
+print(income_stats)
+
+# Paso 2: Evolución mensual del ingreso promedio por plan
+avg_income = user_month_data.groupby(['plan','month']).agg(
+    avg_revenue=('monthly_revenue','mean')
+).reset_index()
+
+pyplot.figure(figsize=(10,6))
+for plan in avg_income['plan'].unique():
+    subset = avg_income[avg_income['plan'] == plan]
+    pyplot.plot(subset['month'], subset['avg_revenue'], marker='o', label=plan.capitalize())
+
+pyplot.xlabel("Mes")
+pyplot.ylabel("Ingreso promedio mensual (USD)")
+pyplot.title("Ingreso promedio mensual por plan")
+pyplot.legend()
+pyplot.xticks(range(1,13))
+pyplot.show()
+
+# Paso 3: Gráfico de violín para distribución de ingresos
+pyplot.figure(figsize=(8,6))
+seaborn.violinplot(x='plan', y='monthly_revenue', data=user_month_data, inner='quartile')
+
+pyplot.title("Distribución de ingresos mensuales por plan")
+pyplot.xlabel("Plan")
+pyplot.ylabel("Ingreso mensual (USD)")
+pyplot.show()
+
+# Paso 4: Histograma comparativo
+pyplot.figure(figsize=(10,6))
+for plan in user_month_data['plan'].unique():
+    subset = user_month_data[user_month_data['plan'] == plan]
+    pyplot.hist(subset['monthly_revenue'], bins=30, alpha=0.6, label=plan.capitalize())
+
+pyplot.xlabel("Ingreso mensual (USD)")
+pyplot.ylabel("Número de usuarios")
+pyplot.title("Distribución de ingresos por plan")
+pyplot.legend()
+pyplot.show()
+
