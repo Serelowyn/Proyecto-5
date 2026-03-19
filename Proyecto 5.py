@@ -331,14 +331,12 @@ pyplot.show()
 # -------------- Calcula la media y la varianza de la duración mensual de llamadas.
 
 # Calcular la media de minutos mensuales
-mean_minutes = user_month_data['total_minutes'].mean()
+minutes_stats = user_month_data.groupby('plan')['total_minutes'].agg(
+    mean='mean',
+    var='var'
+).reset_index()
 
-# Calcular la varianza de minutos mensuales
-var_minutes = user_month_data['total_minutes'].var()
-
-print(f"Media de minutos mensuales: {mean_minutes:.2f}")
-print(f"Varianza de minutos mensuales: {var_minutes:.2f}")
-
+print(minutes_stats)
 # -------------- Traza un diagrama de caja para visualizar la distribución de la duración mensual de llamadas
 
 # Crear el diagrama de caja
