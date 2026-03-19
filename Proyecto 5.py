@@ -76,8 +76,6 @@ df_users['age'] = df_users['age'].astype(int)
 df_users['city'] = df_users['city'].str.replace(' MSA', '', regex=False)
 
 # 5. Revisar valores faltantes y rellenar
-df_users["churn_date"] = df_users["churn_date"].fillna("01-01-2018")
-df_users['churn_date'] = pandas.to_datetime(df_users['churn_date'], errors='coerce')
 print(df_users.isna().sum())
 print(df_users)
 
@@ -99,8 +97,8 @@ df_calls['call_date'] = pandas.to_datetime(df_calls['call_date'], errors='coerce
 df_calls['duration'] = df_calls['duration'].astype(float)
 
 # 3. Convertir id y user_id a enteros
-df_calls['id'] = df_calls['id'].astype(int)
-df_calls['user_id'] = df_calls['user_id'].astype(int)
+df_calls['id'] = df_calls['id'].astype(str)
+df_calls['user_id'] = df_calls['user_id'].astype(str)
 
 # 4. Revisar valores faltantes
 print(df_calls.isna().sum())
@@ -158,21 +156,29 @@ print(df_plans)
 
 # Crear una columna con el mes
 df_calls['month'] = df_calls['call_date'].dt.month
+df_calls['duration_ceil'] = numpy.ceil(df_calls['duration'])
 
 # Agrupar por usuario y mes, contar llamadas
 calls_per_user_month = df_calls.groupby(['user_id', 'month']).agg(
     calls_count=('id', 'count')
 ).reset_index()
+calls_per_user_month['user_id'] = calls_per_user_month['user_id'].astype(int)
+calls_per_user_month['month'] = calls_per_user_month['month'].astype(int)
 
 # Guardar el resultado en un nuevo DataFrame
 print(calls_per_user_month.head())
 
 # -------------- Calcula la cantidad de minutos usados por cada usuario al mes
 
+# Redondear cada llamada hacia arriba al minuto entero
+df_calls['duration_ceil'] = numpy.ceil(df_calls['duration'])
+
 # Agrupar por usuario y mes, sumar minutos
 minutes_per_user_month = df_calls.groupby(['user_id', 'month']).agg(
-    total_minutes=('duration', 'sum')
+    total_minutes=('duration_ceil', 'sum')
 ).reset_index()
+minutes_per_user_month['user_id'] = minutes_per_user_month['user_id'].astype(int)
+minutes_per_user_month['month'] = minutes_per_user_month['month'].astype(int)
 
 # Guardar el resultado en un nuevo DataFrame
 print(minutes_per_user_month.head())
@@ -185,6 +191,8 @@ df_mensajes['month'] = df_mensajes['message_date'].dt.month
 messages_per_user_month = df_mensajes.groupby(['user_id', 'month']).agg(
     sms_count=('id', 'count')
 ).reset_index()
+messages_per_user_month['user_id'] = messages_per_user_month['user_id'].astype(int)
+messages_per_user_month['month'] = messages_per_user_month['month'].astype(int)
 
 # Guardar el resultado en un nuevo DataFrame
 print(messages_per_user_month.head())
@@ -198,6 +206,11 @@ df_internet['month'] = df_internet['session_date'].dt.month
 internet_per_user_month = df_internet.groupby(['user_id', 'month']).agg(
     mb_used=('mb_used', 'sum')
 ).reset_index()
+
+# Convertir MB a GB y aplicar redondeo hacia arriba para facturación
+internet_per_user_month['gb_used_for_billing'] = numpy.ceil(internet_per_user_month['mb_used'] / 1024)
+internet_per_user_month['user_id'] = internet_per_user_month['user_id'].astype(int)
+internet_per_user_month['month'] = internet_per_user_month['month'].astype(int)
 
 # Guardar el resultado en un nuevo DataFrame
 print(internet_per_user_month.head())
@@ -244,13 +257,14 @@ print(user_month_data.head())
 
 # Convertir MB a GB para comparar con el límite del plan
 user_month_data['gb_used'] = user_month_data['mb_used'] / 1024
+user_month_data['gb_used_for_billing'] = numpy.ceil(user_month_data['mb_used'] / 1024)
 
 # Calcular excedentes de minutos, SMS y GB
 user_month_data['extra_minutes'] = numpy.maximum(user_month_data['total_minutes'] - user_month_data['minutes_included'], 0)
 
 user_month_data['extra_sms'] = numpy.maximum(user_month_data['sms_count'] - user_month_data['messages_included'], 0)
 
-user_month_data['extra_gb'] = numpy.maximum(user_month_data['gb_used'] - (user_month_data['mb_per_month_included'] / 1024), 0)
+user_month_data['extra_gb'] = numpy.maximum(user_month_data['gb_used_for_billing'] - (user_month_data['gb_per_month_included'] / 1024), 0)
 
 # Calcular costo de excedentes
 user_month_data['cost_minutes'] = user_month_data['extra_minutes'] * user_month_data['usd_per_minute']
