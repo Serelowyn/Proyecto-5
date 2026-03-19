@@ -353,30 +353,45 @@ pyplot.show()
 
 # -------------- Comprara el número de mensajes que tienden a enviar cada mes los usuarios de cada plan
 
-# Seleccionar columnas relevantes
-messages_by_plan = user_month_data[['plan', 'month', 'sms_count']]
-
-# Calcular promedio de mensajes por plan y mes
-avg_messages = messages_by_plan.groupby(['plan', 'month']).agg(
-    avg_sms=('sms_count', 'mean')
+# Estadísticas descriptivas de mensajes por plan
+messages_stats = user_month_data.groupby('plan')['sms_count'].agg(
+    mean='mean',
+    median='median',
+    var='var',
+    std='std',
+    min='min',
+    max='max'
 ).reset_index()
 
-print(avg_messages.head())
+print("Estadísticas descriptivas de mensajes por plan:")
+print(messages_stats)
 
-# Graficar
+# Gráfico de distribución: histograma
 pyplot.figure(figsize=(10,6))
-for plan in avg_messages['plan'].unique():
-    subset = avg_messages[avg_messages['plan'] == plan]
-    pyplot.bar(subset['month'] + (0.2 if plan == 'ultimate' else -0.2),
-            subset['avg_sms'],
-            width=0.4,
-            label=plan.capitalize())
+for plan in user_month_data['plan'].unique():
+    subset = user_month_data[user_month_data['plan'] == plan]
+    pyplot.hist(subset['sms_count'], bins=30, alpha=0.6, label=plan.capitalize())
 
-pyplot.xlabel("Mes")
-pyplot.ylabel("Número promedio de mensajes")
-pyplot.title("Mensajes promedio enviados por mes según el plan")
+pyplot.xlabel("Mensajes mensuales enviados")
+pyplot.ylabel("Número de usuarios")
+pyplot.title("Distribución de mensajes mensuales por plan")
 pyplot.legend()
-pyplot.xticks(range(1,13))
+pyplot.show()
+
+# Gráfico de caja (boxplot)
+pyplot.figure(figsize=(8,6))
+seaborn.boxplot(x='plan', y='sms_count', data=user_month_data)
+pyplot.title("Distribución de mensajes mensuales por plan")
+pyplot.xlabel("Plan")
+pyplot.ylabel("Mensajes mensuales enviados")
+pyplot.show()
+
+# Gráfico de violín (opcional, para consistencia con Internet)
+pyplot.figure(figsize=(8,6))
+seaborn.violinplot(x='plan', y='sms_count', data=user_month_data, inner='quartile')
+pyplot.title("Distribución de mensajes mensuales por plan (violin plot)")
+pyplot.xlabel("Plan")
+pyplot.ylabel("Mensajes mensuales enviados")
 pyplot.show()
 
 # -------------- Compara la cantidad de tráfico de Internet consumido por usuarios por plan
