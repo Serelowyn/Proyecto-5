@@ -363,7 +363,7 @@ messages_stats = user_month_data.groupby('plan')['sms_count'].agg(
     max='max'
 ).reset_index()
 
-print("Estadísticas descriptivas de mensajes por plan:")
+print("Estadisticas descriptivas de mensajes por plan:")
 print(messages_stats)
 
 # Gráfico de distribución: histograma
@@ -373,15 +373,15 @@ for plan in user_month_data['plan'].unique():
     pyplot.hist(subset['sms_count'], bins=30, alpha=0.6, label=plan.capitalize())
 
 pyplot.xlabel("Mensajes mensuales enviados")
-pyplot.ylabel("Número de usuarios")
-pyplot.title("Distribución de mensajes mensuales por plan")
+pyplot.ylabel("Num de usuarios")
+pyplot.title("distribucion de mensajes mensuales por plan")
 pyplot.legend()
 pyplot.show()
 
 # Gráfico de caja (boxplot)
 pyplot.figure(figsize=(8,6))
 seaborn.boxplot(x='plan', y='sms_count', data=user_month_data)
-pyplot.title("Distribución de mensajes mensuales por plan")
+pyplot.title("distribucion de mensajes mensuales por plan")
 pyplot.xlabel("Plan")
 pyplot.ylabel("Mensajes mensuales enviados")
 pyplot.show()
@@ -389,7 +389,7 @@ pyplot.show()
 # Gráfico de violín (opcional, para consistencia con Internet)
 pyplot.figure(figsize=(8,6))
 seaborn.violinplot(x='plan', y='sms_count', data=user_month_data, inner='quartile')
-pyplot.title("Distribución de mensajes mensuales por plan (violin plot)")
+pyplot.title("distribucion de mensajes mensuales por plan (violin plot)")
 pyplot.xlabel("Plan")
 pyplot.ylabel("Mensajes mensuales enviados")
 pyplot.show()
@@ -510,17 +510,33 @@ pyplot.show()
 
 # -------------- 1.15 Prueba de hipotesis
 
-# Separar ingresos por plan
+# H0: Los ingresos promedio mensuales de Surf y Ultimate son iguales.
+# H1: Los ingresos promedio mensuales de Surf y Ultimate son diferentes.
+
+# Nivel de significancia
+alpha = 0.05  # estándar en pruebas estadísticas
+
+# Extraer ingresos por plan
 surf_income = user_month_data[user_month_data['plan'] == 'surf']['monthly_revenue']
 ultimate_income = user_month_data[user_month_data['plan'] == 'ultimate']['monthly_revenue']
 
-# Prueba t de Student para muestras independientes
+# Calcular medias
+print("Media Surf:", surf_income.mean())
+print("Media Ultimate:", ultimate_income.mean())
+
+# Prueba t de dos muestras independientes (Welch)
 t_stat, p_value = stats.ttest_ind(surf_income, ultimate_income, equal_var=False)
 
-print(f"Estadístico t: {t_stat:.4f}")
-print(f"Valor p: {p_value:.4f}")
+print("Estadístico t:", t_stat)
+print("Valor-p:", p_value)
 
-# Visualización: Boxplot comparativo
+# Decisión
+if p_value < alpha:
+    print("Rechazamos H0: los ingresos promedio son significativamente diferentes entre Surf y Ultimate.")
+else:
+    print("No podemos rechazar H0: no hay evidencia suficiente de diferencia en ingresos promedio.")
+    
+# Gráficos de comparación
 pyplot.figure(figsize=(8,6))
 seaborn.boxplot(x='plan', y='monthly_revenue', data=user_month_data)
 pyplot.title("Comparación de ingresos mensuales por plan")
@@ -528,7 +544,6 @@ pyplot.xlabel("Plan")
 pyplot.ylabel("Ingreso mensual (USD)")
 pyplot.show()
 
-# Visualización: Distribución KDE
 pyplot.figure(figsize=(10,6))
 seaborn.kdeplot(surf_income, label="Surf", fill=True, alpha=0.4)
 seaborn.kdeplot(ultimate_income, label="Ultimate", fill=True, alpha=0.4)
@@ -537,7 +552,6 @@ pyplot.xlabel("Ingreso mensual (USD)")
 pyplot.ylabel("Densidad")
 pyplot.legend()
 pyplot.show()
-
 
 #por region
 
