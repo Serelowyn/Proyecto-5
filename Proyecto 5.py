@@ -6,6 +6,7 @@ import math
 from math import factorial
 from scipy import stats
 from matplotlib import pyplot
+import seaborn
 
 # ----------------- Fin de las importaciones
 
@@ -396,4 +397,38 @@ pyplot.ylabel("Promedio de GB usados")
 pyplot.title("Consumo promedio de Internet por plan y mes")
 pyplot.legend()
 pyplot.xticks(range(1,13))
+pyplot.show()
+
+# -------------- 1.13.3 Internet
+
+internet_stats = user_month_data.groupby('plan')['gb_used'].agg(
+    mean='mean',
+    median='median',
+    var='var',
+    std='std',
+    min='min',
+    max='max'
+).reset_index()
+
+print(internet_stats)
+
+#grafico de violin
+pyplot.figure(figsize=(8,6))
+seaborn.violinplot(x='plan', y='gb_used', data=user_month_data, inner='quartile')
+
+pyplot.title("Distribución del consumo mensual de Internet por plan")
+pyplot.xlabel("Plan")
+pyplot.ylabel("GB usados al mes")
+pyplot.show()
+
+#grafico de densidad
+pyplot.figure(figsize=(10,6))
+for plan in user_month_data['plan'].unique():
+    subset = user_month_data[user_month_data['plan'] == plan]
+    seaborn.kdeplot(subset['gb_used'], label=plan.capitalize(), fill=True, alpha=0.4)
+
+pyplot.xlabel("GB mensuales usados")
+pyplot.ylabel("Densidad")
+pyplot.title("Distribución de consumo de Internet por plan (KDE)")
+pyplot.legend()
 pyplot.show()
