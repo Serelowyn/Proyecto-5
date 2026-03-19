@@ -555,26 +555,44 @@ pyplot.show()
 
 #por region
 
+# H0: Los ingresos promedio mensuales de usuarios en NY-NJ son iguales a los de otras regiones.
+# H1: Los ingresos promedio mensuales de usuarios en NY-NJ son diferentes a los de otras regiones.
+
+# Nivel de significancia
+alpha = 0.05  # estándar en pruebas estadísticas
+
 # Separar ingresos por región
 ny_income = user_month_data[user_month_data['city'] == 'New York-Newark-Jersey City, NY-NJ-PA']['monthly_revenue']
 other_income = user_month_data[user_month_data['city'] != 'New York-Newark-Jersey City, NY-NJ-PA']['monthly_revenue']
 
-# Prueba t de Student para muestras independientes
+# Calcular medias
+print("Media NY-NJ:", ny_income.mean())
+print("Media otras regiones:", other_income.mean())
+
+# Prueba t de dos muestras independientes (Welch)
 t_stat, p_value = stats.ttest_ind(ny_income, other_income, equal_var=False)
 
-print(f"Estadístico t: {t_stat:.4f}")
-print(f"Valor p: {p_value:.4f}")
+print("Estadístico t:", t_stat)
+print("Valor-p:", p_value)
 
-# Visualización: Boxplot comparativo New York-Newark-Jersey City, NY-NJ-PA
+# Decisión
+if p_value < alpha:
+    print("Rechazamos H0: los ingresos promedio son significativamente diferentes entre NY-NJ y otras regiones.")
+else:
+    print("No podemos rechazar H0: no hay evidencia suficiente de diferencia en ingresos promedio entre NY-NJ y otras regiones.")
+
+# Gráfico boxplot
 pyplot.figure(figsize=(8,6))
-seaborn.boxplot(x=user_month_data['city'].apply(lambda r: 'New York-Newark-Jersey City, NY-NJ-PA' if r=='New York-Newark-Jersey City, NY-NJ-PA' else 'Otros'),
-            y=user_month_data['monthly_revenue'])
+seaborn.boxplot(
+    x=user_month_data['city'].apply(lambda r: 'NY-NJ' if r=='New York-Newark-Jersey City, NY-NJ-PA' else 'Otros'),
+    y=user_month_data['monthly_revenue']
+)
 pyplot.title("Comparación de ingresos mensuales: NY-NJ vs otras regiones")
 pyplot.xlabel("Región")
 pyplot.ylabel("Ingreso mensual (USD)")
 pyplot.show()
 
-# Visualización: Distribución KDE
+# Gráfico de densidad
 pyplot.figure(figsize=(10,6))
 seaborn.kdeplot(ny_income, label="NY-NJ", fill=True, alpha=0.4)
 seaborn.kdeplot(other_income, label="Otros", fill=True, alpha=0.4)
@@ -583,3 +601,4 @@ pyplot.xlabel("Ingreso mensual (USD)")
 pyplot.ylabel("Densidad")
 pyplot.legend()
 pyplot.show()
+
