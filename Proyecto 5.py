@@ -261,10 +261,9 @@ user_month_data['gb_used_for_billing'] = numpy.ceil(user_month_data['mb_used'] /
 
 # Calcular excedentes de minutos, SMS y GB
 user_month_data['extra_minutes'] = numpy.maximum(user_month_data['total_minutes'] - user_month_data['minutes_included'], 0)
-
 user_month_data['extra_sms'] = numpy.maximum(user_month_data['sms_count'] - user_month_data['messages_included'], 0)
+user_month_data['extra_gb'] = numpy.maximum(user_month_data['gb_used_for_billing'] - user_month_data['gb_per_month_included'], 0)
 
-user_month_data['extra_gb'] = numpy.maximum(user_month_data['gb_used_for_billing'] - (user_month_data['gb_per_month_included'] / 1024), 0)
 
 # Calcular costo de excedentes
 user_month_data['cost_minutes'] = user_month_data['extra_minutes'] * user_month_data['usd_per_minute']
@@ -279,7 +278,6 @@ user_month_data['monthly_revenue'] = (
     user_month_data['cost_gb']
 )
 
-# Mostrar una muestra del resultado
 print(user_month_data[['user_id', 'month', 'plan', 'monthly_revenue']].head())
 
 # -------------- 1.13.1 Llamadas
