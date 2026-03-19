@@ -2,8 +2,6 @@
 
 import pandas
 import numpy
-import math
-from math import factorial
 from scipy import stats
 from matplotlib import pyplot
 import seaborn
@@ -485,3 +483,64 @@ pyplot.title("Distribución de ingresos por plan")
 pyplot.legend()
 pyplot.show()
 
+# -------------- 1.15 Prueba de hipotesis
+
+# Separar ingresos por plan
+surf_income = user_month_data[user_month_data['plan'] == 'surf']['monthly_revenue']
+ultimate_income = user_month_data[user_month_data['plan'] == 'ultimate']['monthly_revenue']
+
+# Prueba t de Student para muestras independientes
+t_stat, p_value = stats.ttest_ind(surf_income, ultimate_income, equal_var=False)
+
+print(f"Estadístico t: {t_stat:.4f}")
+print(f"Valor p: {p_value:.4f}")
+
+# Visualización: Boxplot comparativo
+pyplot.figure(figsize=(8,6))
+seaborn.boxplot(x='plan', y='monthly_revenue', data=user_month_data)
+pyplot.title("Comparación de ingresos mensuales por plan")
+pyplot.xlabel("Plan")
+pyplot.ylabel("Ingreso mensual (USD)")
+pyplot.show()
+
+# Visualización: Distribución KDE
+pyplot.figure(figsize=(10,6))
+seaborn.kdeplot(surf_income, label="Surf", fill=True, alpha=0.4)
+seaborn.kdeplot(ultimate_income, label="Ultimate", fill=True, alpha=0.4)
+pyplot.title("Distribución de ingresos mensuales por plan")
+pyplot.xlabel("Ingreso mensual (USD)")
+pyplot.ylabel("Densidad")
+pyplot.legend()
+pyplot.show()
+
+
+#por region
+
+# Separar ingresos por región
+ny_income = user_month_data[user_month_data['city'] == 'New York-Newark-Jersey City, NY-NJ-PA']['monthly_revenue']
+other_income = user_month_data[user_month_data['city'] != 'New York-Newark-Jersey City, NY-NJ-PA']['monthly_revenue']
+
+# Prueba t de Student para muestras independientes
+t_stat, p_value = stats.ttest_ind(ny_income, other_income, equal_var=False)
+
+print(f"Estadístico t: {t_stat:.4f}")
+print(f"Valor p: {p_value:.4f}")
+
+# Visualización: Boxplot comparativo New York-Newark-Jersey City, NY-NJ-PA
+pyplot.figure(figsize=(8,6))
+seaborn.boxplot(x=user_month_data['city'].apply(lambda r: 'New York-Newark-Jersey City, NY-NJ-PA' if r=='New York-Newark-Jersey City, NY-NJ-PA' else 'Otros'),
+            y=user_month_data['monthly_revenue'])
+pyplot.title("Comparación de ingresos mensuales: NY-NJ vs otras regiones")
+pyplot.xlabel("Región")
+pyplot.ylabel("Ingreso mensual (USD)")
+pyplot.show()
+
+# Visualización: Distribución KDE
+pyplot.figure(figsize=(10,6))
+seaborn.kdeplot(ny_income, label="NY-NJ", fill=True, alpha=0.4)
+seaborn.kdeplot(other_income, label="Otros", fill=True, alpha=0.4)
+pyplot.title("Distribución de ingresos mensuales por región")
+pyplot.xlabel("Ingreso mensual (USD)")
+pyplot.ylabel("Densidad")
+pyplot.legend()
+pyplot.show()
